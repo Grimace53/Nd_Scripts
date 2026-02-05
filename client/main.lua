@@ -1,16 +1,43 @@
 -- Client-side farming interactions
 local playerPlants = {}
 
+-- Detect framework
+local Framework = nil
+local FrameworkName = nil
+
+CreateThread(function()
+    if GetResourceState('qbx_core') == 'started' then
+        Framework = exports['qbx_core']:GetCoreObject()
+        FrameworkName = 'qbx'
+    elseif GetResourceState('qb-core') == 'started' then
+        Framework = exports['qb-core']:GetCoreObject()
+        FrameworkName = 'qb'
+    elseif GetResourceState('es_extended') == 'started' then
+        Framework = exports['es_extended']:getSharedObject()
+        FrameworkName = 'esx'
+    end
+end)
+
 -- Helper function to show notifications
 function ShowNotification(message, type)
-    -- This would integrate with your notification system
-    -- Example for QBCore:
-    -- exports['qb-core']:Notify(message, type)
-    
-    -- Generic notification
-    SetNotificationTextEntry('STRING')
-    AddTextComponentString(message)
-    DrawNotification(0, 1)
+    -- Use ox_lib if available
+    if GetResourceState('ox_lib') == 'started' then
+        lib.notify({
+            title = 'Farming',
+            description = message,
+            type = type or 'info'
+        })
+    -- Use framework notification
+    elseif FrameworkName == 'qbx' or FrameworkName == 'qb' then
+        Framework.Functions.Notify(message, type)
+    elseif FrameworkName == 'esx' then
+        Framework.ShowNotification(message)
+    else
+        -- Fallback to native GTA notification
+        SetNotificationTextEntry('STRING')
+        AddTextComponentString(message)
+        DrawNotification(0, 1)
+    end
 end
 
 -- Register notification handler

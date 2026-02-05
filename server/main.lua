@@ -1,10 +1,76 @@
 -- Server-side plant management system
 local plants = {}  -- Store all active plants
 
--- Initialize plant tracking
+-- Detect framework
+local Framework = nil
+local FrameworkName = nil
+
 CreateThread(function()
+    if GetResourceState('qbx_core') == 'started' then
+        Framework = exports['qbx_core']:GetCoreObject()
+        FrameworkName = 'qbx'
+        print('[Nd_Scripts] Detected QBX-Core framework')
+    elseif GetResourceState('qb-core') == 'started' then
+        Framework = exports['qb-core']:GetCoreObject()
+        FrameworkName = 'qb'
+        print('[Nd_Scripts] Detected QBCore framework')
+    elseif GetResourceState('es_extended') == 'started' then
+        Framework = exports['es_extended']:getSharedObject()
+        FrameworkName = 'esx'
+        print('[Nd_Scripts] Detected ESX framework')
+    else
+        print('[Nd_Scripts] No framework detected - running standalone')
+    end
     print('[Nd_Scripts] Farming system initialized')
 end)
+
+-- Helper function to add item to player inventory
+local function AddItemToPlayer(src, item, amount)
+    if GetResourceState('ox_inventory') == 'started' then
+        -- ox_inventory
+        exports.ox_inventory:AddItem(src, item, amount)
+        return true
+    elseif FrameworkName == 'qbx' or FrameworkName == 'qb' then
+        -- QBX-Core or QBCore
+        local Player = Framework.Functions.GetPlayer(src)
+        if Player then
+            Player.Functions.AddItem(item, amount)
+            return true
+        end
+    elseif FrameworkName == 'esx' then
+        -- ESX
+        local xPlayer = Framework.GetPlayerFromId(src)
+        if xPlayer then
+            xPlayer.addInventoryItem(item, amount)
+            return true
+        end
+    end
+    return false
+end
+
+-- Helper function to remove item from player inventory
+local function RemoveItemFromPlayer(src, item, amount)
+    if GetResourceState('ox_inventory') == 'started' then
+        -- ox_inventory
+        exports.ox_inventory:RemoveItem(src, item, amount)
+        return true
+    elseif FrameworkName == 'qbx' or FrameworkName == 'qb' then
+        -- QBX-Core or QBCore
+        local Player = Framework.Functions.GetPlayer(src)
+        if Player then
+            Player.Functions.RemoveItem(item, amount)
+            return true
+        end
+    elseif FrameworkName == 'esx' then
+        -- ESX
+        local xPlayer = Framework.GetPlayerFromId(src)
+        if xPlayer then
+            xPlayer.removeInventoryItem(item, amount)
+            return true
+        end
+    end
+    return false
+end
 
 -- Function to create a new plant
 function CreatePlant(plantId, plantType, coords, owner)
@@ -101,15 +167,18 @@ RegisterNetEvent('nd_farming:harvestPlant', function(plantId)
     local plantConfig = Config.Plants[plants[plantId].type]
     local yieldAmount = plants[plantId].yield
     
-    -- Give harvest items to player
-    -- This would integrate with your inventory system (QBCore, ESX, etc.)
-    -- Example: exports['qb-inventory']:AddItem(src, plantConfig.harvestItem, yieldAmount)
+    -- Give harvest items to player using framework-agnostic function
+    local success = AddItemToPlayer(src, plantConfig.harvestItem, yieldAmount)
     
-    TriggerClientEvent('nd_farming:notify', src, 'Harvested ' .. yieldAmount .. 'x ' .. plantConfig.harvestItem, 'success')
-    TriggerClientEvent('nd_farming:plantHarvested', -1, plantId)
-    
-    -- Remove plant from tracking
-    plants[plantId] = nil
+    if success then
+        TriggerClientEvent('nd_farming:notify', src, 'Harvested ' .. yieldAmount .. 'x ' .. plantConfig.harvestItem, 'success')
+        TriggerClientEvent('nd_farming:plantHarvested', -1, plantId)
+        
+        -- Remove plant from tracking
+        plants[plantId] = nil
+    else
+        TriggerClientEvent('nd_farming:notify', src, 'Failed to harvest plant!', 'error')
+    end
 end)
 
 -- Get plant information

@@ -2,6 +2,33 @@
 
 All notable changes to the Nd_Scripts farming system will be documented in this file.
 
+## [1.1.0] - 2026-02-05
+
+### Added
+- **ox_lib Integration**: Full support for ox_lib notifications
+- **ox_inventory Integration**: Native ox_inventory item definitions
+- **QBX-Core Support**: Full compatibility with QBX-Core framework
+- **Automatic Framework Detection**: Script detects and adapts to your framework automatically
+- New integration guides:
+  - OX_INTEGRATION.md for ox_lib and ox_inventory
+  - QBX_INTEGRATION.md for QBX-Core
+- Modern notification system using ox_lib when available
+- Framework-agnostic inventory functions
+- ox_items.lua for ox_inventory item definitions
+
+### Changed
+- Updated fxmanifest.lua to support ox_lib and lua54
+- Enhanced client notifications with ox_lib support
+- Improved server-side inventory management with multi-framework support
+- Updated README with ox and QBX compatibility information
+- Enhanced QUICKSTART guide with ox and QBX instructions
+
+### Improved
+- Better framework detection on resource start
+- Fallback notification system for servers without ox_lib
+- More flexible inventory integration
+- Performance optimizations
+
 ## [1.0.0] - 2026-02-05
 
 ### Added

@@ -3,12 +3,15 @@ Scripts for Neon Dream
 
 ## Farming System with Fertilizers
 
-A FiveM farming system that includes three types of fertilizers to enhance your crops:
+A FiveM farming system that includes three types of fertilizers to enhance your crops. **Fully compatible with ox_lib, ox_inventory, QBX-Core, QBCore, and ESX!**
 
 ### Features
 - 🌱 **Growth Fertilizer** - Speeds up plant growth by 25%
 - 🌾 **Yield Fertilizer** - Increases harvest yield by 50%
 - 💉 **Super Serum** - The ultimate enhancer! Increases growth speed by 40% AND yield by 75%
+- 🔧 **Multi-Framework Support** - Works with ox_lib, ox_inventory, QBX-Core, QBCore, and ESX
+- 📦 **Automatic Detection** - Detects your framework and adapts automatically
+- 🎨 **Modern UI** - Uses ox_lib notifications when available
 
 ### Items
 
@@ -33,10 +36,18 @@ A FiveM farming system that includes three types of fertilizers to enhance your 
 ### Installation
 
 1. Place the `Nd_Scripts` folder in your server's `resources` directory
-2. Add `ensure Nd_Scripts` to your `server.cfg`
-3. Add the items to your framework's shared items:
-   - For **QBCore**: Add items from `shared/items.lua` to `qb-core/shared/items.lua`
-   - For **ESX**: Add items from `shared/items.lua` to your items database
+2. Ensure `ox_lib` is installed and started (optional but recommended)
+3. Add to your `server.cfg`:
+   ```
+   ensure ox_lib          # Optional but recommended
+   ensure Nd_Scripts
+   ```
+4. Add the items to your framework's shared items:
+   - For **ox_inventory**: Add items from `shared/ox_items.lua` to `ox_inventory/data/items.lua`
+   - For **QBX-Core**: Add items from `QBX_INTEGRATION.md` to `qbx_core/shared/items.lua`
+   - For **QBCore**: Add items from `QBCORE_INTEGRATION.md` to `qb-core/shared/items.lua`
+   - For **ESX**: Add items from `ESX_INTEGRATION.md` to your items database
+5. Register useable items (see integration guides)
 
 ### Usage
 
@@ -90,8 +101,13 @@ You can add more plant types in `config.lua`
 ### Requirements
 
 - FiveM Server
-- Compatible with QBCore, ESX, or standalone frameworks
-- Optional: Inventory system for item management
+- **Optional but recommended**: ox_lib for modern notifications
+- Compatible with:
+  - ✅ ox_inventory
+  - ✅ QBX-Core (QBCore fork)
+  - ✅ QBCore
+  - ✅ ESX
+  - ✅ Standalone (no framework required)
 
 ### License
 

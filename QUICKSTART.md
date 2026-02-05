@@ -9,17 +9,29 @@ Get the fertilizer system running on your server in 5 minutes!
 cp -r Nd_Scripts /path/to/your/server/resources/
 
 # Add to server.cfg
+echo "ensure ox_lib" >> server.cfg    # Optional but recommended
 echo "ensure Nd_Scripts" >> server.cfg
 ```
 
 ## Step 2: Add Items to Your Framework (2 minutes)
 
+### For ox_inventory:
+
+1. Copy items from `shared/ox_items.lua`
+2. Add to `ox_inventory/data/items.lua`
+3. See full guide in OX_INTEGRATION.md
+
+### For QBX-Core:
+
+1. Open `qbx_core/shared/items.lua`
+2. Copy the three item definitions from `QBX_INTEGRATION.md` 
+3. Register the useable items (see full guide in QBX_INTEGRATION.md)
+
 ### For QBCore:
 
 1. Open `qb-core/shared/items.lua`
 2. Copy the three item definitions from `QBCORE_INTEGRATION.md` 
-3. Paste them into your items.lua file
-4. Register the useable items (see full guide in QBCORE_INTEGRATION.md)
+3. Register the useable items (see full guide in QBCORE_INTEGRATION.md)
 
 ### For ESX:
 
@@ -63,8 +75,11 @@ Your fertilizer system is now live!
 
 ## Need Help?
 
+- **ox_lib & ox_inventory**: See OX_INTEGRATION.md
+- **QBX-Core**: See QBX_INTEGRATION.md
+- **QBCore**: See QBCORE_INTEGRATION.md
+- **ESX**: See ESX_INTEGRATION.md
 - **Full Documentation**: See README.md
-- **Integration Guides**: QBCORE_INTEGRATION.md or ESX_INTEGRATION.md
 - **Examples**: EXAMPLES.md
 - **Configuration**: Edit config.lua to customize effects
 
