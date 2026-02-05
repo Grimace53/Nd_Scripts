@@ -5,6 +5,10 @@ author 'Neon Dream'
 description 'Plant Health System with NUI'
 version '1.0.0'
 
+shared_scripts {
+    '@ox_lib/init.lua'
+}
+
 client_scripts {
     'client.lua'
 }
