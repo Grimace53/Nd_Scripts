@@ -1,26 +1,29 @@
---[[
-    ox_lib & ox_inventory Integration Guide
-    
-    This file shows how to integrate the fertilizer items with ox_lib and ox_inventory.
-    Follow these steps to add the items to your server.
-]]
+# ox_lib & ox_inventory Integration Guide
 
---[[
-    Step 1: Ensure ox_lib is installed and started
-    
-    Add to your server.cfg before Nd_Scripts:
-    ensure ox_lib
-    ensure ox_inventory
-    ensure Nd_Scripts
-]]
+This guide shows how to integrate the fertilizer items with ox_lib and ox_inventory.
 
---[[
-    Step 2: Add items to ox_inventory
-    
-    Open ox_inventory/data/items.lua and add the following items:
-    (Or copy from shared/ox_items.lua)
-]]
+## Requirements
 
+- ox_lib installed and started
+- ox_inventory installed and started (optional but recommended)
+
+## Installation Steps
+
+### Step 1: Ensure ox_lib is installed
+
+Add to your `server.cfg` before Nd_Scripts:
+
+```cfg
+ensure ox_lib
+ensure ox_inventory
+ensure Nd_Scripts
+```
+
+### Step 2: Add items to ox_inventory
+
+Open `ox_inventory/data/items.lua` and add the following items (or copy from `shared/ox_items.lua`):
+
+```lua
 ['growth_fertilizer'] = {
     label = 'Growth Fertilizer',
     weight = 100,
@@ -53,17 +56,16 @@
         image = 'super_serum.png',
     }
 },
+```
 
---[[
-    Step 3: Register useable items
-    
-    The script automatically detects ox_inventory and handles item usage.
-    However, you need to register the items as useable in ox_inventory.
-    
-    Create or add to ox_inventory/data/shops.lua or your item usage handler:
-]]
+### Step 3: Register useable items
 
--- In your resource that handles item usage (or in ox_inventory config)
+The script automatically detects ox_inventory and handles item usage. However, you need to register the items as useable.
+
+Create or add to your item usage handler:
+
+```lua
+-- In your resource that handles item usage
 exports('growth_fertilizer', function(event, item, inventory, slot, data)
     if event == 'usingItem' then
         TriggerEvent('Nd_Scripts:client:useGrowthFertilizer')
@@ -81,39 +83,22 @@ exports('super_serum', function(event, item, inventory, slot, data)
         TriggerEvent('Nd_Scripts:client:useSuperSerum')
     end
 end)
+```
 
---[[
-    Alternative Step 3: Using ox_inventory metadata
-    
-    You can also register items in fxmanifest.lua of Nd_Scripts:
-]]
+### Step 4: Add item images
 
--- Add to fxmanifest.lua:
-files {
-    'shared/ox_items.lua'
-}
+Place item images in: `ox_inventory/web/images/`
 
--- Then items will be auto-registered if you structure them correctly
+**Image files needed:**
+- `growth_fertilizer.png`
+- `yield_fertilizer.png`
+- `super_serum.png`
 
---[[
-    Step 4: Add item images
-    
-    Place item images in:
-    ox_inventory/web/images/
-    
-    Image files needed:
-    - growth_fertilizer.png
-    - yield_fertilizer.png
-    - super_serum.png
-]]
+### Step 5: Add to shops (optional)
 
---[[
-    Step 5: Add to shops (optional)
-    
-    If using ox_inventory shops, add to your shop config:
-]]
+If using ox_inventory shops, add to your shop config:
 
--- Example shop configuration
+```lua
 Config.Shops = {
     FarmingSupply = {
         name = 'Farming Supply Store',
@@ -132,28 +117,22 @@ Config.Shops = {
         targets = {}
     }
 }
+```
 
---[[
-    Step 6: Using ox_lib notifications
-    
-    The script automatically uses ox_lib notifications if available.
-    No additional configuration needed!
-]]
+## Testing
 
---[[
-    Step 7: Testing
-    
-    In-game commands for testing:
-    /plant tomato          - Plant a test crop
-    /usefertilizer super_serum - Apply super serum to nearby plant
-]]
+In-game commands for testing:
 
---[[
-    Advanced: Using with ox_target
-    
-    If you want to use ox_target for plant interaction:
-]]
+```
+/plant tomato          - Plant a test crop
+/usefertilizer super_serum - Apply super serum to nearby plant
+```
 
+## Advanced: Using with ox_target
+
+If you want to use ox_target for plant interaction:
+
+```lua
 -- In your plant creation script
 exports.ox_target:addLocalEntity(plantEntity, {
     {
@@ -175,39 +154,35 @@ exports.ox_target:addLocalEntity(plantEntity, {
         end,
         distance = 2.0,
         canInteract = function()
-            -- Only show if plant is ready
             return isPlantReady
         end
     }
 })
+```
 
---[[
-    Features with ox_lib:
-    
-    ✅ Modern notifications with ox_lib
-    ✅ Automatic framework detection
-    ✅ ox_inventory integration
-    ✅ Optimized performance
-    ✅ No additional dependencies
-]]
+## Features with ox_lib
 
---[[
-    Compatibility:
-    
-    - ox_lib: ✅ Full support
-    - ox_inventory: ✅ Full support
-    - ox_target: ✅ Compatible (optional)
-    - Works standalone: ✅ Yes
-    - Works with QBX-Core: ✅ Yes
-    - Works with QBCore: ✅ Yes
-    - Works with ESX: ✅ Yes
-]]
+- ✅ Modern notifications with ox_lib
+- ✅ Automatic framework detection
+- ✅ ox_inventory integration
+- ✅ Optimized performance
+- ✅ No additional dependencies
 
---[[
-    Performance Notes:
-    
-    - ox_lib is lightweight and optimized
-    - ox_inventory handles items efficiently
-    - No performance impact on server
-    - Recommended for modern FiveM servers
-]]
+## Compatibility
+
+| Component | Status |
+|-----------|--------|
+| ox_lib | ✅ Full support |
+| ox_inventory | ✅ Full support |
+| ox_target | ✅ Compatible (optional) |
+| Standalone | ✅ Yes |
+| QBX-Core | ✅ Yes |
+| QBCore | ✅ Yes |
+| ESX | ✅ Yes |
+
+## Performance Notes
+
+- ox_lib is lightweight and optimized
+- ox_inventory handles items efficiently
+- No performance impact on server
+- Recommended for modern FiveM servers

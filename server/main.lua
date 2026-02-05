@@ -28,8 +28,8 @@ end)
 local function AddItemToPlayer(src, item, amount)
     if GetResourceState('ox_inventory') == 'started' then
         -- ox_inventory
-        exports.ox_inventory:AddItem(src, item, amount)
-        return true
+        local success = exports.ox_inventory:AddItem(src, item, amount)
+        return success ~= false
     elseif FrameworkName == 'qbx' or FrameworkName == 'qb' then
         -- QBX-Core or QBCore
         local Player = Framework.Functions.GetPlayer(src)
@@ -52,8 +52,8 @@ end
 local function RemoveItemFromPlayer(src, item, amount)
     if GetResourceState('ox_inventory') == 'started' then
         -- ox_inventory
-        exports.ox_inventory:RemoveItem(src, item, amount)
-        return true
+        local success = exports.ox_inventory:RemoveItem(src, item, amount)
+        return success ~= false
     elseif FrameworkName == 'qbx' or FrameworkName == 'qb' then
         -- QBX-Core or QBCore
         local Player = Framework.Functions.GetPlayer(src)
