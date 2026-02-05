@@ -3,8 +3,13 @@
 Utils = {}
 
 -- Generate unique ID for props
+-- Uses a combination of timestamp, random number, and counter for uniqueness
+local idCounter = 0
 function Utils.GenerateId()
-    return 'prop_' .. math.random(10000, 99999) .. '_' .. os.time()
+    idCounter = idCounter + 1
+    local timestamp = os.time()
+    local random = math.random(1000, 9999)
+    return string.format('prop_%d_%d_%d', timestamp, random, idCounter)
 end
 
 -- Check if player has required items

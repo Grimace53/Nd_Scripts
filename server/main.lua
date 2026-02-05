@@ -4,6 +4,8 @@ local growingTimers = {}
 
 -- Initialize
 CreateThread(function()
+    -- Seed random number generator for better randomness
+    math.randomseed(os.time())
     Utils.Debug('Server initialized')
 end)
 
