@@ -88,6 +88,19 @@ RegisterNetEvent('nd_farming:receivePlantInfo', function(plantInfo)
     print(json.encode(plantInfo, { indent = true }))
 end)
 
+-- Client event handlers for framework integration
+RegisterNetEvent('Nd_Scripts:client:useGrowthFertilizer', function()
+    UseFertilizer('growth_fertilizer')
+end)
+
+RegisterNetEvent('Nd_Scripts:client:useYieldFertilizer', function()
+    UseFertilizer('yield_fertilizer')
+end)
+
+RegisterNetEvent('Nd_Scripts:client:useSuperSerum', function()
+    UseFertilizer('super_serum')
+end)
+
 -- Export functions for use with items
 exports('UseGrowthFertilizer', function()
     UseFertilizer('growth_fertilizer')

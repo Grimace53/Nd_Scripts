@@ -1,0 +1,18 @@
+# FiveM
+*.log
+*.cache
+cache/
+
+# Development
+test_output/
+*.tmp
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*~
