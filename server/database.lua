@@ -88,7 +88,7 @@ function Database.UpdateProp(id, data)
         table.insert(updates, 'fertilizer_level = ?')
         table.insert(values, data.fertilizerLevel)
     end
-    if data.fertilizerType then
+    if data.fertilizerType ~= nil then
         table.insert(updates, 'fertilizer_type = ?')
         table.insert(values, data.fertilizerType)
     end

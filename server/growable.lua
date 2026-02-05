@@ -124,7 +124,6 @@ function CalculatePlantHealth(propData)
 end
 
 -- Override StartGrowingTimer to support fertilizers
-local oldStartGrowingTimer = StartGrowingTimer
 function StartGrowingTimer(id, propType, fertilizerType)
     local config = Config.GrowingProps[propType]
     

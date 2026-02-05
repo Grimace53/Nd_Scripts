@@ -279,7 +279,7 @@ RegisterNetEvent('nd_drugs:server:craftItem', function(id, recipeIndex)
     end
     
     -- Remove requirements
-    for _, req in ipairs(recipe.requirements) do
+    for idx, req in ipairs(recipe.requirements) do
         local removed = exports.ox_inventory:RemoveItem(source, req.item, req.amount)
         if not removed then
             TriggerClientEvent('ox_lib:notify', source, {
@@ -287,7 +287,7 @@ RegisterNetEvent('nd_drugs:server:craftItem', function(id, recipeIndex)
                 description = 'Failed to remove required items'
             })
             -- Attempt to return already removed items
-            for i = 1, _ - 1 do
+            for i = 1, idx - 1 do
                 local prevReq = recipe.requirements[i]
                 exports.ox_inventory:AddItem(source, prevReq.item, prevReq.amount)
             end
