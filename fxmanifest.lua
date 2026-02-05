@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'Neon Dream'
 description 'Drug Growing and Crafting System with Placeable Props'
-version '1.0.0'
+version '2.0.0'
 
 shared_scripts {
     '@ox_lib/init.lua',
@@ -20,12 +20,20 @@ server_scripts {
     'server/*.lua'
 }
 
+ui_page 'html/index.html'
+
+files {
+    'html/index.html',
+    'html/script.js',
+    'html/style.css'
+}
+
 dependencies {
     'ox_lib',
     'ox_target',
     'ox_inventory',
     'qbx_core',
-    'md-drugs'
+    'oxmysql'
 }
 
 lua54 'yes'

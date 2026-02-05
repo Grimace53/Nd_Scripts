@@ -40,11 +40,48 @@ function SpawnGrowingProp(id, propData)
     -- Add ox_target interaction
     exports.ox_target:addLocalEntity(obj, {
         {
-            name = 'pickup_growing_prop',
-            label = 'Pick Up Growing Pot',
-            icon = 'fas fa-hand-paper',
+            name = 'view_plant_health',
+            label = 'View Plant Health',
+            icon = 'fas fa-heart',
             onSelect = function()
-                TriggerServerEvent('nd_drugs:server:pickupProp', id)
+                exports['nd_drugs']:openPlantHealthUI(id, growingProps[id].data)
+            end
+        },
+        {
+            name = 'water_plant',
+            label = 'Water Plant',
+            icon = 'fas fa-tint',
+            onSelect = function()
+                TriggerServerEvent('nd_drugs:server:waterPlant', id)
+            end
+        },
+        {
+            name = 'apply_fertilizer',
+            label = 'Apply Fertilizer',
+            icon = 'fas fa-leaf',
+            canInteract = function()
+                return growingProps[id] and not growingProps[id].data.fertilizerType
+            end,
+            onSelect = function()
+                -- Show fertilizer selection menu
+                local options = {}
+                for fertType, fertConfig in pairs(Fertilizers) do
+                    table.insert(options, {
+                        title = fertConfig.label,
+                        description = fertConfig.description,
+                        icon = 'leaf',
+                        onSelect = function()
+                            TriggerServerEvent('nd_drugs:server:applyFertilizerToPot', id, fertType)
+                        end
+                    })
+                end
+                
+                lib.registerContext({
+                    id = 'fertilizer_menu',
+                    title = 'Select Fertilizer',
+                    options = options
+                })
+                lib.showContext('fertilizer_menu')
             end
         },
         {
@@ -52,11 +89,18 @@ function SpawnGrowingProp(id, propData)
             label = 'Harvest',
             icon = 'fas fa-seedling',
             canInteract = function()
-                -- Check current state instead of captured value
                 return growingProps[id] and growingProps[id].data.ready
             end,
             onSelect = function()
-                TriggerServerEvent('nd_drugs:server:harvestProp', id)
+                TriggerServerEvent('nd_drugs:server:harvestPropWithFertilizer', id)
+            end
+        },
+        {
+            name = 'pickup_growing_prop',
+            label = 'Pick Up Pot',
+            icon = 'fas fa-hand-paper',
+            onSelect = function()
+                TriggerServerEvent('nd_drugs:server:pickupProp', id)
             end
         }
     })

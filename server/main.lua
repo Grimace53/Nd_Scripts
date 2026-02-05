@@ -4,12 +4,26 @@ local growingTimers = {}
 
 -- Initialize
 CreateThread(function()
-    -- Seed random number generator for better randomness
     math.randomseed(os.time())
     Utils.Debug('Server initialized')
+    
+    -- Initialize database
+    Database.Init()
+    
+    -- Load placed props from database
+    Wait(1000)
+    placedProps = Database.LoadAllProps()
+    Utils.Debug('Loaded ' .. #placedProps .. ' props from database')
+    
+    -- Restart timers for growing props
+    for id, prop in pairs(placedProps) do
+        if prop.type == 'growing' and not prop.ready then
+            StartGrowingTimer(id, prop.propType, prop.fertilizerType)
+        end
+    end
 end)
 
--- Load props (would normally be from database)
+-- Load props for connecting player
 RegisterNetEvent('nd_drugs:server:loadProps', function()
     local source = source
     TriggerClientEvent('nd_drugs:client:syncProps', source, placedProps)
@@ -58,6 +72,10 @@ RegisterNetEvent('nd_drugs:server:placeProp', function(coords, propType, isGrowi
         propData.model = Config.GrowingProps[propType].model
         propData.currentStage = 1
         propData.ready = false
+        propData.plantHealth = 100
+        propData.waterLevel = 50
+        propData.lightLevel = 75
+        propData.fertilizerLevel = 0
         
         -- Start growing timer
         StartGrowingTimer(id, propType)
@@ -77,6 +95,9 @@ RegisterNetEvent('nd_drugs:server:placeProp', function(coords, propType, isGrowi
     
     -- Add to placed props
     placedProps[id] = propData
+    
+    -- Save to database
+    Database.SaveProp(propData)
     
     -- Sync to all clients
     TriggerClientEvent('nd_drugs:client:syncProps', -1, placedProps)
@@ -114,6 +135,9 @@ RegisterNetEvent('nd_drugs:server:pickupProp', function(id)
         
         -- Remove from placed props
         placedProps[id] = nil
+        
+        -- Delete from database
+        Database.DeleteProp(id)
         
         -- Stop growing timer if exists
         if growingTimers[id] then

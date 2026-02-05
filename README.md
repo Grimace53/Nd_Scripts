@@ -1,250 +1,257 @@
-# ND Drug System - Placeable Props
+# ND Drugs - Advanced Drug System
 
-A comprehensive FiveM drug system featuring placeable growing pots and crafting tables with full integration for ox_target, ox_inventory, ox_lib, qbx_core, and md-drugs.
+A comprehensive FiveM drug system featuring placeable growing pots, crafting tables, NPC drug dealers, fertilizers, and plant health monitoring.
 
-## Features
+## 🌟 Features
 
-- **Placeable Drug Growing Pots**
-  - Place growing pots anywhere in the world
-  - Multi-stage growth system
-  - Harvest when ready
-  - Pick up and relocate pots
+### PR #4 Foundation - Growing & Crafting System
+- **Placeable Growing Pots**: Place pots anywhere in the world to grow drugs
+- **Plant Growth Stages**: Visual progression through 3 growth stages
+- **Crafting Tables**: Process raw materials into final products
+- **ox_target Integration**: Intuitive interaction system
+- **ox_inventory Integration**: Full inventory support
+- **Database Persistence**: All placed props saved to MySQL
 
-- **Placeable Crafting Tables**
-  - Place crafting tables anywhere
-  - Multiple crafting recipes
-  - Progress bar for crafting
-  - Pick up and relocate tables
+### PR #2 - Drug Types & NPC Dealers
+- **Growable Drugs**: Weed and Cocaine (pot-based)
+- **Non-Growable Drugs**: Meth, Heroin, LSD (NPC dealer-based)
+- **AI Drug Dealers**: NPCs spawn at configured locations
+- **Minigame System**: ox_lib skillcheck integration for dealer interactions
+- **Cooldown System**: Location-based cooldowns to prevent abuse
+- **Database Tracking**: Full interaction logging
 
-- **Full Framework Integration**
-  - ox_target for all interactions
-  - ox_inventory for item management
-  - ox_lib for UI elements
-  - qbx_core for player data
-  - md-drugs for drug system integration
+### PR #3 - Fertilizer System
+- **Growth Fertilizer**: +25% growth speed
+- **Yield Fertilizer**: +50% harvest yield
+- **Super Serum**: +40% growth speed, +75% yield
+- **One-Time Application**: Apply once per plant cycle
+- **Smart Calculations**: Automatic time/yield adjustments
 
-## Dependencies
+### PR #5 - Plant Health NUI
+- **Visual Health Monitor**: Beautiful UI showing plant stats
+- **Health Metrics**: Monitor water, light, and fertilizer levels
+- **Real-Time Updates**: Live stat degradation over time
+- **Interactive Actions**: Water plants to maintain health
+- **Health Impact**: Poor health reduces harvest yield
 
-This resource requires the following resources to be installed and started before it:
+## 📦 Installation
 
-1. [ox_lib](https://github.com/overextended/ox_lib)
-2. [ox_target](https://github.com/overextended/ox_target)
-3. [ox_inventory](https://github.com/overextended/ox_inventory)
-4. [qbx_core](https://github.com/Qbox-project/qbx_core)
-5. [md-drugs](https://github.com/Mustache-Mods/md-drugs) (optional)
+### 1. Dependencies
+Ensure you have these resources installed:
+- [ox_lib](https://github.com/overextended/ox_lib)
+- [ox_target](https://github.com/overextended/ox_target)
+- [ox_inventory](https://github.com/overextended/ox_inventory)
+- [qbx_core](https://github.com/Qbox-project/qbx_core)
+- [oxmysql](https://github.com/overextended/oxmysql)
 
-## Installation
-
-1. Clone or download this repository into your server's resources folder
-2. Rename the folder to `nd_drugs` (or your preferred name)
-3. Add the following items to your `ox_inventory/data/items.lua`:
-
-```lua
--- Growing Props
-['drug_pot'] = {
-    label = 'Drug Growing Pot',
-    weight = 5000,
-    stack = false,
-    close = true,
-    description = 'A pot for growing plants',
-    client = {
-        export = 'nd_drugs.placeProp'
-    }
-},
-
--- Crafting Props
-['craft_table'] = {
-    label = 'Crafting Table',
-    weight = 10000,
-    stack = false,
-    close = true,
-    description = 'A table for crafting items',
-    client = {
-        export = 'nd_drugs.placeProp'
-    }
-},
-
--- Growing Resources
-['weed_leaf'] = {
-    label = 'Weed Leaf',
-    weight = 100,
-    stack = true,
-    close = true,
-    description = 'Raw weed leaf'
-},
-
-['coca_leaf'] = {
-    label = 'Coca Leaf',
-    weight = 100,
-    stack = true,
-    close = true,
-    description = 'Raw coca leaf'
-},
-
--- Crafting Materials
-['rolling_paper'] = {
-    label = 'Rolling Paper',
-    weight = 10,
-    stack = true,
-    close = true,
-    description = 'Paper for rolling'
-},
-
-['chemicals'] = {
-    label = 'Chemicals',
-    weight = 500,
-    stack = true,
-    close = true,
-    description = 'Chemical compounds'
-},
-
--- Final Products
-['weed'] = {
-    label = 'Weed',
-    weight = 200,
-    stack = true,
-    close = true,
-    description = 'Processed weed'
-},
-
-['coke'] = {
-    label = 'Cocaine',
-    weight = 200,
-    stack = true,
-    close = true,
-    description = 'Processed cocaine'
-}
+### 2. Database Setup
+Execute the SQL file to create required tables:
+```bash
+mysql -u your_user -p your_database < schema.sql
 ```
 
-4. Add the resource to your `server.cfg`:
+Or manually run the SQL in your database management tool.
 
-```cfg
+### 3. Items Configuration
+Add items from `items_example.lua` to your `ox_inventory/data/items.lua` file:
+- Growing pots (drug_pot, coca_pot)
+- Crafting table (craft_table)
+- Fertilizers (growth_fertilizer, yield_fertilizer, super_serum)
+- Raw materials (weed_leaf, coca_leaf, etc.)
+- Drug dealer items (meth_ingredient, heroin_powder, lsd_paper, etc.)
+- Final products (weed, coke, meth)
+
+### 4. Resource Installation
+1. Place `nd_drugs` folder in your `resources` directory
+2. Add to your `server.cfg`:
+```
 ensure ox_lib
 ensure ox_target
 ensure ox_inventory
 ensure qbx_core
-ensure md-drugs
+ensure oxmysql
 ensure nd_drugs
 ```
 
-## Usage
-
-### Placing Props
-
-1. Obtain a `drug_pot` or `craft_table` item
-2. Use the item from your inventory
-3. The prop will be placed in front of you
-4. Use ox_target to interact with the prop
-
-### Growing Drugs
-
-1. Place a drug pot
-2. Wait for the growth stages to complete (configurable in `config.lua`)
-3. When ready, target the pot and select "Harvest"
-4. Receive your harvested items
-
-### Crafting Drugs
-
-1. Place a crafting table
-2. Ensure you have the required materials
-3. Target the table and select a recipe
-4. Wait for the crafting progress to complete
-5. Receive your crafted item
-
-### Picking Up Props
-
-1. Target any placed prop
-2. Select "Pick Up" option
-3. The prop will be returned to your inventory (if you have space)
-
-## Configuration
-
+### 5. Configuration
 Edit `config.lua` to customize:
+- Growing times
+- Harvest yields
+- Crafting recipes
+- NPC dealer locations
+- Cooldown timers
+- Fertilizer multipliers
 
-- Growth times and stages
-- Crafting recipes and requirements
-- Prop models
-- Item rewards
-- Distance limits
-- Permissions
+## 🎮 Usage
 
-### Example Config Changes
+### Growing System
+1. **Place a Pot**: Use a growing pot item from inventory
+2. **Apply Fertilizer** (Optional): Use ox_target → "Apply Fertilizer"
+3. **Water Plant**: Keep water levels high for best health
+4. **Monitor Health**: Use ox_target → "View Plant Health"
+5. **Harvest**: When ready, use ox_target → "Harvest"
 
+### Crafting System
+1. **Place Crafting Table**: Use crafting table item from inventory
+2. **Select Recipe**: Use ox_target → Choose what to craft
+3. **Wait for Progress**: Progress bar shows crafting time
+4. **Collect Product**: Automatically added to inventory
+
+### NPC Drug Dealers
+1. **Find Dealer**: NPCs spawn at configured locations
+2. **Interact**: Use ox_target → "Talk to [Drug] Dealer"
+3. **Complete Minigame**: ox_lib skillcheck based on drug type
+4. **Receive Items**: Success gives random items based on chance
+5. **Cooldown**: Wait before returning to same dealer
+
+### Fertilizer System
+- **When to Apply**: Apply fertilizer right after planting for maximum benefit
+- **One Per Cycle**: Can only apply one fertilizer per growth cycle
+- **Choose Wisely**: 
+  - Growth Fertilizer for faster harvests
+  - Yield Fertilizer for more items
+  - Super Serum for both benefits
+
+### Plant Health System
+- **Water**: Decreases 2% per minute, water plants regularly
+- **Light**: Varies by time of day (higher during daytime)
+- **Fertilizer**: Depletes 1% per minute when applied
+- **Health Calculation**: 40% light + 40% water + 20% fertilizer
+- **Yield Impact**: Health below 100% reduces harvest amount
+
+## ⚙️ Configuration Examples
+
+### Add a New Growing Pot Type
 ```lua
--- Change growth time to 10 minutes
-Config.GrowingProps.pot.growTime = 600000
-
--- Add a new crafting recipe
-table.insert(Config.CraftingProps.tablet.recipes, {
-    name = 'Meth',
-    item = 'meth',
-    requirements = {
-        {item = 'pseudoephedrine', amount = 2},
-        {item = 'chemicals', amount = 1}
-    },
-    craftTime = 20000,
-    output = {item = 'meth', amount = 1}
-})
+Config.GrowingProps = {
+    opium_pot = {
+        model = 'prop_plant_01a',
+        label = 'Opium Poppy Pot',
+        item = 'opium_pot',
+        growTime = 600000, -- 10 minutes
+        stages = {
+            {model = 'prop_plant_01a', stage = 1, time = 200000},
+            {model = 'prop_plant_01b', stage = 2, time = 400000},
+            {model = 'prop_plant_01c', stage = 3, time = 600000}
+        },
+        reward = {
+            item = 'opium_flower',
+            min = 2,
+            max = 4
+        }
+    }
+}
 ```
 
-## Models Used
-
-This script uses default GTA V models:
-- Growing Pots: `bkr_prop_weed_01_small_01a/b/c`
-- Crafting Table: `bkr_prop_meth_table01a`
-
-You can change these in `config.lua` to use custom models.
-
-## Exports
-
-### Client Exports
-
+### Add a New Drug Dealer
 ```lua
--- Place a prop programmatically
-exports.nd_drugs:placeProp(propType, isGrowing)
+Config.NonGrowableDrugs = {
+    mdma = {
+        label = 'MDMA',
+        pedModel = 'a_m_y_clubcust_03',
+        locations = {
+            {x = 123.45, y = -678.90, z = 12.34, heading = 90.0}
+        },
+        items = {
+            {item = 'mdma_crystal', amount = {min = 1, max = 3}, chance = 60}
+        },
+        minigameType = 'hacking'
+    }
+}
 ```
+
+### Create a Custom Fertilizer
+Edit `shared/fertilizers.lua`:
+```lua
+Fertilizers = {
+    mega_boost = {
+        name = 'mega_boost',
+        label = 'Mega Boost',
+        description = 'Extreme enhancement',
+        growSpeedMultiplier = 2.0,  -- 100% faster
+        yieldMultiplier = 2.0,      -- 100% more yield
+        weight = 200
+    }
+}
+```
+
+## 🎯 Commands & Exports
 
 ### Server Exports
-
 ```lua
 -- Get all placed props
-local props = exports.nd_drugs:getPlacedProps()
+local props = exports['nd_drugs']:getPlacedProps()
 
 -- Remove a specific prop
-exports.nd_drugs:removeProp(propId)
+exports['nd_drugs']:removeProp(propId)
 ```
 
-## Integration with md-drugs
+### Client Exports
+```lua
+-- Open plant health UI
+exports['nd_drugs']:openPlantHealthUI(propId, propData)
 
-If you have md-drugs installed and `Config.UseMDDrugs = true`, the script will trigger events when items are crafted, allowing md-drugs to track drug production.
+-- Get all drug dealer NPCs
+local dealers = exports['nd_drugs']:GetDrugDealers()
+```
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
-### Props not appearing
-- Check that all dependencies are started before nd_drugs
-- Verify the models exist in your game files
-- Check server console for errors
+### Props Not Saving
+- Verify database connection in `oxmysql`
+- Check SQL tables were created properly
+- Review server console for MySQL errors
 
-### Cannot place props
-- Ensure you have the correct items in your inventory
-- Check that you're not too close to another prop
-- Verify ox_inventory is working correctly
+### NUI Not Showing
+- Clear FiveM cache: `%localappdata%/FiveM/FiveM Application Data/cache`
+- Verify `ui_page` and `files` in fxmanifest.lua
+- Check browser console (F8 in-game, then browser dev tools)
 
-### Interactions not working
-- Ensure ox_target is properly configured
-- Check that third eye/target is working with other resources
-- Verify distance settings in config
+### NPCs Not Spawning
+- Ensure coordinates are valid
+- Check Config.NonGrowableDrugs is properly configured
+- Verify ox_target is running
 
-## Support
+### Fertilizers Not Working
+- Confirm items are in ox_inventory
+- Check shared/fertilizers.lua is loaded
+- Verify fertilizer item names match config
 
-For issues and feature requests, please visit the GitHub repository.
+## 📝 Database Tables
 
-## Credits
+### drug_placed_props
+Tracks all placed growing pots and crafting tables with health data.
 
-- Created for Neon Dream
-- Uses ox_lib, ox_target, ox_inventory
-- Compatible with qbx_core and md-drugs
+### drug_weed / drug_cocaine
+Legacy tables for direct drug planting (alternative to pots).
 
-## License
+### drug_meth / drug_heroin / drug_lsd
+Logs NPC dealer interactions and items received.
 
-This resource is provided as-is for use on FiveM servers.
+### drug_cooldowns
+Prevents spam by tracking cooldown timers per player/location.
+
+## 🤝 Support
+
+For issues, questions, or suggestions:
+1. Check configuration is correct
+2. Review server console for errors
+3. Verify all dependencies are up to date
+4. Check database tables exist
+
+## 📄 License
+
+See LICENSE file for details.
+
+## 🎉 Credits
+
+- **PR #4**: Foundation with ox framework integration
+- **PR #2**: Drug types and NPC dealer system
+- **PR #3**: Fertilizer enhancement system
+- **PR #5**: Plant health NUI interface
+
+---
+
+**Version**: 2.0.0  
+**Framework**: QBX Core + Ox Framework  
+**Database**: MySQL (via oxmysql)
