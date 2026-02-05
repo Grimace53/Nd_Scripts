@@ -1,6 +1,23 @@
 -- Database operations module
 Database = {}
 
+-- Whitelist of valid drug types to prevent SQL injection
+local VALID_DRUG_TYPES = {
+    weed = true,
+    cocaine = true,
+    meth = true,
+    heroin = true,
+    lsd = true
+}
+
+-- Validate drug type against whitelist
+local function ValidateDrugType(drugType)
+    if not VALID_DRUG_TYPES[drugType] then
+        error(string.format('Invalid drug type: %s', tostring(drugType)))
+    end
+    return true
+end
+
 -- Initialize database tables
 function Database.Init()
     Utils.Debug('Initializing database tables...')
@@ -108,6 +125,7 @@ end
 
 -- Growable drug operations
 function Database.PlantDrug(drugType, identifier, position)
+    ValidateDrugType(drugType)
     local insertId = MySQL.insert.await(
         'INSERT INTO drug_'..drugType..' (identifier, position, growth_stage, harvestable) VALUES (?, ?, ?, ?)',
         {identifier, json.encode(position), 0, false}
@@ -116,10 +134,12 @@ function Database.PlantDrug(drugType, identifier, position)
 end
 
 function Database.GetPlant(drugType, plantId)
+    ValidateDrugType(drugType)
     return MySQL.single.await('SELECT * FROM drug_'..drugType..' WHERE id = ?', {plantId})
 end
 
 function Database.UpdatePlantStage(drugType, plantId, stage, harvestable)
+    ValidateDrugType(drugType)
     return MySQL.update.await(
         'UPDATE drug_'..drugType..' SET growth_stage = ?, harvestable = ? WHERE id = ?',
         {stage, harvestable, plantId}
@@ -127,14 +147,17 @@ function Database.UpdatePlantStage(drugType, plantId, stage, harvestable)
 end
 
 function Database.DeletePlant(drugType, plantId)
+    ValidateDrugType(drugType)
     return MySQL.query.await('DELETE FROM drug_'..drugType..' WHERE id = ?', {plantId})
 end
 
 function Database.GetAllPlants(drugType)
+    ValidateDrugType(drugType)
     return MySQL.query.await('SELECT * FROM drug_'..drugType, {})
 end
 
 function Database.ApplyFertilizer(drugType, plantId, fertilizerType, growthMult, yieldMult)
+    ValidateDrugType(drugType)
     return MySQL.update.await(
         'UPDATE drug_'..drugType..' SET fertilizer_type = ?, fertilizer_applied_at = NOW(), growth_multiplier = ?, yield_multiplier = ? WHERE id = ?',
         {fertilizerType, growthMult, yieldMult, plantId}
@@ -159,6 +182,7 @@ end
 
 -- Non-growable drug interaction logging
 function Database.LogDrugInteraction(drugType, identifier, locationIndex, itemsReceived)
+    ValidateDrugType(drugType)
     return MySQL.insert.await(
         'INSERT INTO drug_'..drugType..' (identifier, location_index, items_received) VALUES (?, ?, ?)',
         {identifier, locationIndex, json.encode(itemsReceived)}

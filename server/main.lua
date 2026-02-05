@@ -159,29 +159,7 @@ RegisterNetEvent('nd_drugs:server:pickupProp', function(id)
     end
 end)
 
--- Start growing timer
-function StartGrowingTimer(id, propType)
-    local config = Config.GrowingProps[propType]
-    
-    CreateThread(function()
-        growingTimers[id] = true
-        
-        for stage, stageData in ipairs(config.stages) do
-            Wait(stageData.time)
-            
-            if not growingTimers[id] or not placedProps[id] then
-                break
-            end
-            
-            placedProps[id].currentStage = stage
-            TriggerClientEvent('nd_drugs:client:updateGrowingStage', -1, id, stage)
-            
-            if stage == #config.stages then
-                placedProps[id].ready = true
-            end
-        end
-    end)
-end
+-- Note: StartGrowingTimer is defined in server/growable.lua with fertilizer support
 
 -- Harvest prop
 RegisterNetEvent('nd_drugs:server:harvestProp', function(id)
