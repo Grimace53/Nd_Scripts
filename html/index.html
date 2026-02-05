@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Health System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="plant-container" class="hidden">
+        <div class="plant-panel">
+            <div class="panel-header">
+                <h2>🌱 Plant Health System</h2>
+                <button class="close-btn" onclick="closeNUI()">✕</button>
+            </div>
+            
+            <div class="plant-icon">
+                <div class="plant" id="plant-visual">
+                    🌿
+                </div>
+            </div>
+            
+            <!-- Health Bar -->
+            <div class="stat-container">
+                <div class="stat-label">
+                    <span class="icon">❤️</span>
+                    <span>Health</span>
+                    <span class="stat-value" id="health-value">100%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill health-fill" id="health-bar" style="width: 100%"></div>
+                </div>
+            </div>
+            
+            <!-- Light Level -->
+            <div class="stat-container">
+                <div class="stat-label">
+                    <span class="icon">☀️</span>
+                    <span>Light</span>
+                    <span class="stat-value" id="light-value">75%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill light-fill" id="light-bar" style="width: 75%"></div>
+                </div>
+                <input type="range" class="stat-slider" id="light-slider" min="0" max="100" value="75">
+            </div>
+            
+            <!-- Water Level -->
+            <div class="stat-container">
+                <div class="stat-label">
+                    <span class="icon">💧</span>
+                    <span>Water</span>
+                    <span class="stat-value" id="water-value">50%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill water-fill" id="water-bar" style="width: 50%"></div>
+                </div>
+                <input type="range" class="stat-slider" id="water-slider" min="0" max="100" value="50">
+            </div>
+            
+            <!-- Fertilizer Level (Optional) -->
+            <div class="stat-container optional">
+                <div class="stat-label">
+                    <span class="icon">🌾</span>
+                    <span>Fertilizer <em>(Optional)</em></span>
+                    <span class="stat-value" id="fertilizer-value">0%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill fertilizer-fill" id="fertilizer-bar" style="width: 0%"></div>
+                </div>
+                <input type="range" class="stat-slider" id="fertilizer-slider" min="0" max="100" value="0">
+            </div>
+            
+            <div class="info-text">
+                <p>💡 Plants need <strong>light</strong> and <strong>water</strong> to grow.</p>
+                <p>🌾 Fertilizer is <strong>optional</strong> but helps plants grow faster.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

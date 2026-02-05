@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Health System - Preview</title>
+    <link rel="stylesheet" href="html/style.css">
+    <style>
+        /* Override for standalone preview */
+        #plant-container {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="plant-container">
+        <div class="plant-panel">
+            <div class="panel-header">
+                <h2>🌱 Plant Health System</h2>
+                <button class="close-btn" onclick="alert('Close button clicked')">✕</button>
+            </div>
+            
+            <div class="plant-icon">
+                <div class="plant healthy" id="plant-visual">
+                    🌿
+                </div>
+            </div>
+            
+            <!-- Health Bar -->
+            <div class="stat-container">
+                <div class="stat-label">
+                    <span class="icon">❤️</span>
+                    <span>Health</span>
+                    <span class="stat-value" id="health-value">100%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill health-fill" id="health-bar" style="width: 100%"></div>
+                </div>
+            </div>
+            
+            <!-- Light Level -->
+            <div class="stat-container">
+                <div class="stat-label">
+                    <span class="icon">☀️</span>
+                    <span>Light</span>
+                    <span class="stat-value" id="light-value">75%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill light-fill" id="light-bar" style="width: 75%"></div>
+                </div>
+                <input type="range" class="stat-slider" id="light-slider" min="0" max="100" value="75">
+            </div>
+            
+            <!-- Water Level -->
+            <div class="stat-container">
+                <div class="stat-label">
+                    <span class="icon">💧</span>
+                    <span>Water</span>
+                    <span class="stat-value" id="water-value">50%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill water-fill" id="water-bar" style="width: 50%"></div>
+                </div>
+                <input type="range" class="stat-slider" id="water-slider" min="0" max="100" value="50">
+            </div>
+            
+            <!-- Fertilizer Level (Optional) -->
+            <div class="stat-container optional">
+                <div class="stat-label">
+                    <span class="icon">🌾</span>
+                    <span>Fertilizer <em>(Optional)</em></span>
+                    <span class="stat-value" id="fertilizer-value">0%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill fertilizer-fill" id="fertilizer-bar" style="width: 0%"></div>
+                </div>
+                <input type="range" class="stat-slider" id="fertilizer-slider" min="0" max="100" value="0">
+            </div>
+            
+            <div class="info-text">
+                <p>💡 Plants need <strong>light</strong> and <strong>water</strong> to grow.</p>
+                <p>🌾 Fertilizer is <strong>optional</strong> but helps plants grow faster.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Standalone preview script
+        let plantData = {
+            health: 100,
+            light: 75,
+            water: 50,
+            fertilizer: 0
+        };
+
+        function updateUI() {
+            // Calculate health based on light and water (40% each) and fertilizer (20% optional)
+            const healthScore = (plantData.light * 0.4) + (plantData.water * 0.4) + (plantData.fertilizer * 0.2);
+            plantData.health = Math.floor(healthScore);
+            
+            // Update health
+            document.getElementById('health-value').textContent = plantData.health + '%';
+            document.getElementById('health-bar').style.width = plantData.health + '%';
+            
+            // Update light
+            document.getElementById('light-value').textContent = Math.round(plantData.light) + '%';
+            document.getElementById('light-bar').style.width = plantData.light + '%';
+            
+            // Update water
+            document.getElementById('water-value').textContent = Math.round(plantData.water) + '%';
+            document.getElementById('water-bar').style.width = plantData.water + '%';
+            
+            // Update fertilizer
+            document.getElementById('fertilizer-value').textContent = Math.round(plantData.fertilizer) + '%';
+            document.getElementById('fertilizer-bar').style.width = plantData.fertilizer + '%';
+            
+            // Update plant visual based on health
+            const plant = document.getElementById('plant-visual');
+            if (plantData.health > 70) {
+                plant.textContent = '🌿';
+                plant.className = 'plant healthy';
+            } else if (plantData.health > 40) {
+                plant.textContent = '🌱';
+                plant.className = 'plant';
+            } else if (plantData.health > 10) {
+                plant.textContent = '🥀';
+                plant.className = 'plant wilting';
+            } else {
+                plant.textContent = '🪴';
+                plant.className = 'plant wilting';
+            }
+        }
+
+        // Slider event listeners
+        document.getElementById('light-slider').addEventListener('input', function(e) {
+            plantData.light = parseInt(e.target.value);
+            updateUI();
+        });
+
+        document.getElementById('water-slider').addEventListener('input', function(e) {
+            plantData.water = parseInt(e.target.value);
+            updateUI();
+        });
+
+        document.getElementById('fertilizer-slider').addEventListener('input', function(e) {
+            plantData.fertilizer = parseInt(e.target.value);
+            updateUI();
+        });
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
