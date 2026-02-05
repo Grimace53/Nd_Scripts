@@ -16,7 +16,8 @@ end
 function Utils.HasRequiredItems(source, requirements)
     for _, req in ipairs(requirements) do
         local hasItem = exports.ox_inventory:GetItem(source, req.item, nil, true)
-        if not hasItem or hasItem < req.amount then
+        -- Explicitly check for nil/false before numeric comparison
+        if not hasItem or type(hasItem) ~= 'number' or hasItem < req.amount then
             return false, req.item
         end
     end

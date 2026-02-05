@@ -222,7 +222,8 @@ RegisterNetEvent('nd_drugs:server:craftItem', function(id, recipeIndex)
     -- Check requirements
     for _, req in ipairs(recipe.requirements) do
         local hasItem = exports.ox_inventory:GetItem(source, req.item, nil, true)
-        if not hasItem or hasItem < req.amount then
+        -- Explicitly check for nil/false and type before numeric comparison
+        if not hasItem or type(hasItem) ~= 'number' or hasItem < req.amount then
             TriggerClientEvent('ox_lib:notify', source, {
                 type = 'error',
                 description = 'Missing required items'
@@ -232,7 +233,7 @@ RegisterNetEvent('nd_drugs:server:craftItem', function(id, recipeIndex)
     end
     
     -- Start crafting progress
-    if lib.callback.await('ox_lib:progressCircle', source, {
+    local progressCompleted = lib.callback.await('ox_lib:progressCircle', source, {
         duration = recipe.craftTime,
         label = 'Crafting ' .. recipe.name,
         position = 'bottom',
@@ -243,12 +244,32 @@ RegisterNetEvent('nd_drugs:server:craftItem', function(id, recipeIndex)
             car = true,
             combat = true
         }
-    }) then
-        -- Remove requirements
-        for _, req in ipairs(recipe.requirements) do
-            exports.ox_inventory:RemoveItem(source, req.item, req.amount)
+    })
+    
+    if not progressCompleted then
+        TriggerClientEvent('ox_lib:notify', source, {
+            type = 'error',
+            description = 'Crafting cancelled'
+        })
+        return
+    end
+    
+    -- Remove requirements
+    for _, req in ipairs(recipe.requirements) do
+        local removed = exports.ox_inventory:RemoveItem(source, req.item, req.amount)
+        if not removed then
+            TriggerClientEvent('ox_lib:notify', source, {
+                type = 'error',
+                description = 'Failed to remove required items'
+            })
+            -- Attempt to return already removed items
+            for i = 1, _ - 1 do
+                local prevReq = recipe.requirements[i]
+                exports.ox_inventory:AddItem(source, prevReq.item, prevReq.amount)
+            end
+            return
         end
-        
+    end
         -- Give output
         if exports.ox_inventory:CanCarryItem(source, recipe.output.item, recipe.output.amount) then
             exports.ox_inventory:AddItem(source, recipe.output.item, recipe.output.amount)
@@ -273,7 +294,6 @@ RegisterNetEvent('nd_drugs:server:craftItem', function(id, recipeIndex)
                 exports.ox_inventory:AddItem(source, req.item, req.amount)
             end
         end
-    end
 end)
 
 -- Helper function to check if player is admin
@@ -284,6 +304,11 @@ function IsPlayerAdmin(source)
     
     local player = QBX:GetPlayer(source)
     if not player then
+        return false
+    end
+    
+    -- Check for PlayerData and job existence
+    if not player.PlayerData or not player.PlayerData.job or not player.PlayerData.job.name then
         return false
     end
     

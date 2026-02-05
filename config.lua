@@ -26,7 +26,7 @@ Config.GrowingProps = {
 
 -- Crafting System
 Config.CraftingProps = {
-    tablet = {
+    crafting_table = {
         model = 'bkr_prop_meth_table01a',
         label = 'Drug Crafting Table',
         item = 'craft_table',

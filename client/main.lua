@@ -52,7 +52,8 @@ function SpawnGrowingProp(id, propData)
             label = 'Harvest',
             icon = 'fas fa-seedling',
             canInteract = function()
-                return propData.ready
+                -- Check current state instead of captured value
+                return growingProps[id] and growingProps[id].data.ready
             end,
             onSelect = function()
                 TriggerServerEvent('nd_drugs:server:harvestProp', id)
@@ -133,7 +134,21 @@ RegisterNetEvent('nd_drugs:client:updateGrowingStage', function(id, stage)
 end)
 
 -- Place prop from inventory
-function PlaceProp(propType, isGrowing)
+function PlaceProp(data, slot)
+    local propType
+    local isGrowing = false
+    
+    -- Determine prop type based on item name
+    if data.name == 'drug_pot' then
+        propType = 'pot'
+        isGrowing = true
+    elseif data.name == 'craft_table' then
+        propType = 'crafting_table'
+        isGrowing = false
+    else
+        return
+    end
+    
     local playerPed = PlayerPedId()
     local coords = GetEntityCoords(playerPed)
     local heading = GetEntityHeading(playerPed)
@@ -160,20 +175,6 @@ function PlaceProp(propType, isGrowing)
         w = heading
     }, propType, isGrowing)
 end
-
--- Register usable items with ox_inventory
-exports.ox_inventory:registerHook('createItem', function(payload)
-    if payload.metadata.propType then
-        local isGrowing = payload.metadata.isGrowing or false
-        PlaceProp(payload.metadata.propType, isGrowing)
-    end
-end, {
-    print = true,
-    itemFilter = {
-        drug_pot = true,
-        craft_table = true
-    }
-})
 
 -- Export functions
 exports('placeProp', PlaceProp)
